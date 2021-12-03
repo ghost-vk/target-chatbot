@@ -1,0 +1,11 @@
+.DS_Store
+.thumbs.db
+node_modules
+.idea
+.env
+public
+out
+dist
+nohup.out
+secret
+test.js

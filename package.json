@@ -1,0 +1,28 @@
+{
+  "name": "skladchina-tbot",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "dev": "NODE_ENV=development DEBUG=* nodemon app.js"
+  },
+  "author": "ghost-vk",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "prettier": "^2.4.1"
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "debug": "^4.3.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "i18n": "^0.13.3",
+    "node-schedule": "^2.0.0",
+    "node-telegram-bot-api": "^0.54.0",
+    "node-telegram-keyboard-wrapper": "^3.0.0",
+    "pg": "^8.7.1"
+  },
+  "optionalDependencies": {
+    "fsevents": "^2.3.2"
+  }
+}
