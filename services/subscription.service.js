@@ -9,17 +9,12 @@ const UserModel = require('./../models/user.model')
 const OrderModel = require('./../models/order.model')
 const { GHOST_ID } = require('./../config')
 const currencyFilter = require('./../filters/currency.filter')
+const sleep = require('./../utils/sleep.util')
 
 let subscriptionsBatch = []
 let errorTimes = 0
 let currentIndex = null
 let errorSubscriptionId = null
-
-const sleep = (ms = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(true), ms)
-  })
-}
 
 class SubscriptionService {
   subscription

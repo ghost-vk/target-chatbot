@@ -45,6 +45,7 @@ module.exports = {
     orders: '🧐 Необработанные',
     ban: '😈 Бан',
     admin: '/admin',
+    mailing: '/mail',
     sendTestMessageToChannel: 'Тестовое сообщение 📢',
   },
 
@@ -55,12 +56,7 @@ module.exports = {
   },
 
   setAdminAction(action) {
-    const availableCommands = [
-      this.adminCommands.confirm,
-      this.adminCommands.reject,
-      this.adminCommands.ban,
-      this.adminCommands.sendTestMessageToChannel,
-    ]
+    const availableCommands = Object.values(this.adminCommands)
     if (availableCommands.includes(action)) {
       this.adminAction = action
     }

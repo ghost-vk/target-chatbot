@@ -121,7 +121,7 @@ class UserModel {
       )
       return user
     } catch (e) {
-      throw new Error('Error when try to get user from database')
+      throw new Error(e)
     }
   }
 

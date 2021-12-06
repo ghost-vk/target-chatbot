@@ -25,6 +25,7 @@ class ReceiveService {
       if (this.user.ban) {
         return ResponseService.genYouBanned(this.user.id)
       }
+      debug('config.adminAction, %O', config.adminAction)
       if (Object.values(config.adminCommands).includes(config.adminAction)) {
         return await ResponseAdminService.handleAction(this.user, this.message)
       }
@@ -132,6 +133,9 @@ class ReceiveService {
           return responses
         }
         case config.adminCommands.admin: {
+          return await this.handleAdminCommand()
+        }
+        case config.adminCommands.mailing: {
           return await this.handleAdminCommand()
         }
       }

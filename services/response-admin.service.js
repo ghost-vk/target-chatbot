@@ -9,6 +9,8 @@ const i18n = require('./../i18n.config')
 const axios = require('axios')
 const { dateToYmd } = require('./../filters/date-to-ymd.filter')
 const currencyFilter = require('./../filters/currency.filter')
+const UserService = require('./user.service')
+const { GHOST_ID } = require('../config')
 
 class ResponseAdminService {
   static async handleCommand(user, message) {
@@ -55,6 +57,14 @@ class ResponseAdminService {
             text: 'Отправьте название канала, пример @channelname',
           }
         }
+        case config.adminCommands.mailing: {
+          config.setAdminAction(config.adminCommands.mailing)
+          return {
+            type: 'message',
+            chatId: user.id,
+            text: 'Отправьте сообщение для рассылки'
+          }
+        }
       }
     } catch (e) {
       throw new Error(e)
@@ -75,6 +85,9 @@ class ResponseAdminService {
         }
         case config.adminCommands.sendTestMessageToChannel: {
           return await this.sendTestMessageToChannel(user, message.text.trim())
+        }
+        case config.adminCommands.mailing: {
+          return await this.mail(user, message.text.trim())
         }
         default: {
           throw new Error('Try to handle admin action but not available action to handle')
@@ -298,6 +311,41 @@ class ResponseAdminService {
         text: `Не удалось отправить сообщение в канал ${channel}`,
         chatId: user.id,
       }
+    }
+  }
+
+  static async mail(user, message) {
+    try {
+      config.resetAdminAction()
+      const users = await UserService.getUsers()
+      let i = 0
+      let messages = []
+      for (const u of users) {
+        if (('' + u.id).startsWith('-')) { // channels
+          continue
+        }
+        i += 1
+        messages.push({
+          type: 'message',
+          chatId: u.id,
+          delay: 500,
+          text: message
+        })
+      }
+      messages.unshift({
+        type: 'message',
+        chatId: config.GHOST_ID,
+        text: `Начинаю рассылку ${i} адресатам ...`
+      })
+      messages.push({
+        type: 'message',
+        chatId: GHOST_ID,
+        delay: 500,
+        text: `Рассылка ${i} адресатам завершена ...`
+      })
+      return messages
+    } catch (e) {
+      throw new Error(e)
     }
   }
 }
