@@ -23,7 +23,7 @@ app.all('*', (req, res) => {
 app.use(errorMiddleware)
 
 if (config.IS_DEV) {
-  config.setUrl('https://23cd-178-178-96-20.ngrok.io')
+  config.setUrl('https://ead9-178-178-96-20.ngrok.io')
 }
 
 scheduleWork()

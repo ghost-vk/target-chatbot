@@ -8,7 +8,7 @@ module.exports = {
   URL: process.env.URL || '',
   GHOST_ID: process.env.GHOST_ID,
   IS_PRODUCTION: process.env.NODE_ENV === 'production',
-  IS_DEV: !this.IS_PRODUCTION,
+  IS_DEV: process.env.NODE_ENV !== 'production',
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_USER: process.env.DB_USER,
   DB_NAME: process.env.DB_NAME,

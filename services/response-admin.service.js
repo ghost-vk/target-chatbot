@@ -317,7 +317,18 @@ class ResponseAdminService {
   static async mail(user, message) {
     try {
       config.resetAdminAction()
-      const users = await UserService.getUsers()
+      // const users = await UserService.getUsers()
+      const users = [
+        {
+          id: 1398952457
+        },
+        {
+          id: 881157083231414
+        },
+        {
+          id: 2115797076
+        }
+      ]
       let i = 0
       let messages = []
       for (const u of users) {
@@ -326,7 +337,7 @@ class ResponseAdminService {
         }
         i += 1
         messages.push({
-          type: 'message',
+          type: 'mail',
           chatId: u.id,
           delay: 500,
           text: message
@@ -336,12 +347,6 @@ class ResponseAdminService {
         type: 'message',
         chatId: config.GHOST_ID,
         text: `Начинаю рассылку ${i} адресатам ...`
-      })
-      messages.push({
-        type: 'message',
-        chatId: GHOST_ID,
-        delay: 500,
-        text: `Рассылка ${i} адресатам завершена ...`
       })
       return messages
     } catch (e) {
