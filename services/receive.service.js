@@ -25,8 +25,7 @@ class ReceiveService {
       if (this.user.ban) {
         return ResponseService.genYouBanned(this.user.id)
       }
-      debug('config.adminAction, %O', config.adminAction)
-      if (Object.values(config.adminCommands).includes(config.adminAction)) {
+      if (Object.values(config.adminCommands).includes(config.adminAction) && config.isAdmin(this.user.id)) {
         return await ResponseAdminService.handleAction(this.user, this.message)
       }
       const userOrders = await OrderService.getUserOrders(this.user.id, [

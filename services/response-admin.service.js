@@ -317,18 +317,7 @@ class ResponseAdminService {
   static async mail(user, message) {
     try {
       config.resetAdminAction()
-      // const users = await UserService.getUsers()
-      const users = [
-        {
-          id: 1398952457
-        },
-        {
-          id: 881157083231414
-        },
-        {
-          id: 2115797076
-        }
-      ]
+      const users = await UserService.getUsers()
       let i = 0
       let messages = []
       for (const u of users) {
