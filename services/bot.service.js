@@ -82,14 +82,16 @@ const sendMessages = async (responses) => {
         sentMessages.push(sentMessage)
       }
 
-      sentMessages.push(
-        await handleResponse({
-          type: 'message',
-          chatId: GHOST_ID,
-          delay: 500,
-          text: `Рассылка завершена. Доставлено ${sentMessageAmount}.`,
-        })
-      )
+      if (responses.find(r => r.type === 'mail')) {
+        sentMessages.push(
+          await handleResponse({
+            type: 'message',
+            chatId: GHOST_ID,
+            delay: 500,
+            text: `Рассылка завершена. Доставлено ${sentMessageAmount}.`,
+          })
+        )
+      }
     } else if (typeof responses === 'object') {
       const sentMessage = await handleResponse(responses)
       const user = await UserModel.getUser(sentMessage.chat.id)
