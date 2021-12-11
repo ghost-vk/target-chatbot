@@ -134,7 +134,13 @@ class ReceiveService {
         case config.adminCommands.admin: {
           return await this.handleAdminCommand()
         }
-        case config.adminCommands.mailing: {
+        case config.adminCommands.mailingAll: {
+          return await this.handleAdminCommand()
+        }
+        case config.adminCommands.mailingSubscribers: {
+          return await this.handleAdminCommand()
+        }
+        case config.adminCommands.mailingAllWithoutSubscribers: {
           return await this.handleAdminCommand()
         }
       }

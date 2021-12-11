@@ -45,7 +45,9 @@ module.exports = {
     orders: '🧐 Необработанные',
     ban: '😈 Бан',
     admin: '/admin',
-    mailing: '/mail',
+    mailingAll: '/mailall',
+    mailingSubscribers: '/mailsubscribers',
+    mailingAllWithoutSubscribers: '/mailnosubscribers',
     sendTestMessageToChannel: 'Тестовое сообщение 📢',
   },
 

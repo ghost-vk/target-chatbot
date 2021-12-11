@@ -20,7 +20,6 @@ class ResponseInviteLinkService {
 
       const subscription = await SubscriptionModel.getSubscriptionFromDatabaseById(subscriptionId)
 
-      // todo тест
       if (subscription.isExpired) {
         return {
           type: 'message',

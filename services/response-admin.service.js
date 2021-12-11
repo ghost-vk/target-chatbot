@@ -10,7 +10,6 @@ const axios = require('axios')
 const { dateToYmd } = require('./../filters/date-to-ymd.filter')
 const currencyFilter = require('./../filters/currency.filter')
 const UserService = require('./user.service')
-const { GHOST_ID } = require('../config')
 
 class ResponseAdminService {
   static async handleCommand(user, message) {
@@ -57,12 +56,28 @@ class ResponseAdminService {
             text: 'Отправьте название канала, пример @channelname',
           }
         }
-        case config.adminCommands.mailing: {
-          config.setAdminAction(config.adminCommands.mailing)
+        case config.adminCommands.mailingAll: {
+          config.setAdminAction(config.adminCommands.mailingAll)
           return {
             type: 'message',
             chatId: user.id,
-            text: 'Отправьте сообщение для рассылки'
+            text: 'Отправьте сообщение для рассылки (всем)'
+          }
+        }
+        case config.adminCommands.mailingAllWithoutSubscribers: {
+          config.setAdminAction(config.adminCommands.mailingAllWithoutSubscribers)
+          return {
+            type: 'message',
+            chatId: user.id,
+            text: 'Отправьте сообщение для рассылки (всем без подписчиков)'
+          }
+        }
+        case config.adminCommands.mailingSubscribers: {
+          config.setAdminAction(config.adminCommands.mailingSubscribers)
+          return {
+            type: 'message',
+            chatId: user.id,
+            text: 'Отправьте сообщение для рассылки (подписчикам)'
           }
         }
       }
@@ -86,8 +101,14 @@ class ResponseAdminService {
         case config.adminCommands.sendTestMessageToChannel: {
           return await this.sendTestMessageToChannel(user, message.text.trim())
         }
-        case config.adminCommands.mailing: {
-          return await this.mail(user, message.text.trim())
+        case config.adminCommands.mailingAll: {
+          return await this.mailAll(message.text.trim())
+        }
+        case config.adminCommands.mailingAllWithoutSubscribers: {
+          return await this.mailAllWithoutSubscribers(message.text.trim())
+        }
+        case config.adminCommands.mailingSubscribers: {
+          return await this.mailSubscribers(message.text.trim())
         }
         default: {
           throw new Error('Try to handle admin action but not available action to handle')
@@ -166,7 +187,7 @@ class ResponseAdminService {
           type: 'message',
           chatId: order.userId,
           text: i18n.__('order.confirmed_material'),
-          form: { reply_markup: ResponseService.genSecretLink(product.secretLink).getMarkup() } // todo test
+          form: { reply_markup: ResponseService.genSecretLink(product.secretLink).getMarkup() }
         }
       } else {
         firstMessage = {
@@ -314,10 +335,39 @@ class ResponseAdminService {
     }
   }
 
-  static async mail(user, message) {
+  static async mailAll(message) {
+    try {
+      const users = await UserService.getUsers()
+      return await this.mail(users, message)
+    } catch (e) {
+      throw new Error(e)
+    }
+  }
+
+  static async mailAllWithoutSubscribers(message) {
+    try {
+      const users = await UserService.getAllWithoutSubscribersId()
+      return await this.mail(users, message)
+    } catch (e) {
+      throw new Error(e)
+    }
+  }
+
+  static async mailSubscribers(message) {
+    try {
+      const users = await UserService.getSubscribers()
+      return await this.mail(users, message)
+    } catch (e) {
+      throw new Error(e)
+    }
+  }
+
+  static async mail(users, message) {
     try {
       config.resetAdminAction()
-      const users = await UserService.getUsers()
+      if (!Array.isArray(users)) {
+        throw new Error('Try to mail, but users is not array')
+      }
       let i = 0
       let messages = []
       for (const u of users) {

@@ -1,4 +1,5 @@
 const db = require('./../db')
+const UserDto = require('./../dtos/user.dto')
 
 class UserModel {
   id
@@ -7,28 +8,15 @@ class UserModel {
   lastName
   lastIncome // last message sent from bot
   lastEcho
-  userStatus
 
-  constructor(
-    id,
-    username = null,
-    firstName = null,
-    lastName = null,
-    lastIncome = null,
-    currentProductId = null,
-    status = null,
-    ban = false,
-    lastEcho = null,
-  ) {
-    this.id = Number(id)
-    this.username = username ? username : '---'
-    this.firstName = firstName
-    this.lastName = lastName
-    this.lastIncome = lastIncome ? Number(lastIncome) : null
-    this.currentProductId = currentProductId ? Number(currentProductId) : null
-    this.status = status
-    this.ban = ban
-    this.lastEcho = lastEcho
+  constructor(dto) {
+    this.id = Number(dto.id)
+    this.username = dto.username ? dto.username : '---'
+    this.firstName = dto.firstName
+    this.lastName = dto.lastName
+    this.lastIncome = dto.lastIncome ? Number(dto.lastIncome) : null
+    this.ban = dto.ban
+    this.lastEcho = dto.lastEcho ? Number(dto.lastEcho) : null
   }
 
   async add() {
@@ -41,26 +29,15 @@ class UserModel {
           VALUES ($1, $2, $3, $4, DEFAULT, DEFAULT, DEFAULT) RETURNING *`,
         [this.id, this.username, this.firstName, this.lastName]
       )
-      return result.rows[0]
+      const userDto = new UserDto(result.rows[0])
+      return new UserModel({ ...userDto })
     } catch (e) {
       throw new Error(e)
     }
   }
 
   field(field = 'id') {
-    if (
-      ![
-        'id',
-        'username',
-        'firstName',
-        'lastName',
-        'lastIncome',
-        'currentProductId',
-        'userStatus',
-        'ban',
-        'lastEcho'
-      ].includes(field)
-    ) {
+    if (!Object.keys(this).includes(field)) {
       throw new Error('Not available field to get from UserModel')
     }
     return this[field]
@@ -107,19 +84,8 @@ class UserModel {
       if (result.rows.length === 0) {
         return {}
       }
-      const fields = result.rows[0]
-      const user = new UserModel(
-        fields.id,
-        fields.username,
-        fields.first_name,
-        fields.last_name,
-        fields.last_income_id,
-        fields.current_product_id,
-        fields.status,
-        fields.ban,
-        fields.last_echo_id
-      )
-      return user
+      const userDto = new UserDto(result.rows[0])
+      return new UserModel({ ...userDto })
     } catch (e) {
       throw new Error(e)
     }

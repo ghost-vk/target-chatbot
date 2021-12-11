@@ -1,11 +1,10 @@
 const TelegramBot = require('node-telegram-bot-api')
-const { BOT_TOKEN } = require('./../config')
+const { BOT_TOKEN, GHOST_ID } = require('./../config')
 const UserModel = require('./../models/user.model')
 const debug = require('debug')('service:bot')
 const sleep = require('./../utils/sleep.util')
-const { GHOST_ID } = require('../config')
 
-const bot = new TelegramBot(BOT_TOKEN)
+const bot = new TelegramBot(BOT_TOKEN, { webHook: true })
 
 const handleResponse = async (response) => {
   let args = []
@@ -100,6 +99,7 @@ const sendMessages = async (responses) => {
     } else {
       throw new Error('Responses is not array/object.')
     }
+    sentMessageAmount = 0
     return sentMessages
   } catch (e) {
     throw new Error(e)

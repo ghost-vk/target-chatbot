@@ -8,6 +8,7 @@ const { bot } = require('./services/bot.service')
 const { listenTg } = require('./services/tg-listener.service')
 const scheduleWork = require('./services/shedule.service')
 const debug = require('debug')('http')
+const CurrencyService = require('./services/currency.service')
 
 // Routes
 const botRoute = require('./routes/bot.route')
@@ -23,7 +24,7 @@ app.all('*', (req, res) => {
 app.use(errorMiddleware)
 
 if (config.IS_DEV) {
-  config.setUrl('https://ead9-178-178-96-20.ngrok.io')
+  config.setUrl('https://ae9f-178-178-96-20.ngrok.io')
 }
 
 scheduleWork()
@@ -35,6 +36,7 @@ const start = async () => {
     await listenTg()
 
     if (config.IS_PRODUCTION) {
+      await CurrencyService.updateCurrency()
       const httpsServer = https.createServer(
         {
           key: fs.readFileSync('/etc/letsencrypt/live/anastasi-target.ru/privkey.pem'),

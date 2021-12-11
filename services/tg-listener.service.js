@@ -2,6 +2,7 @@ const { bot, sendMessages } = require('./bot.service')
 const UserModel = require('./../models/user.model')
 const ReceiveService = require('./receive.service')
 const debug = require('debug')('telegramRequest')
+const UserDto = require('./../dtos/user.dto')
 
 const listenTg = async () => {
   try {
@@ -10,10 +11,13 @@ const listenTg = async () => {
       try {
         let user = await UserModel.getUser(msg.chat.id)
         if (!user.id) {
-          const username = msg.chat.username || null
-          const firstName = msg.chat.first_name || null
-          const lastName = msg.chat.last_name || null
-          user = new UserModel(msg.chat.id, username, firstName, lastName)
+          const userDto = new UserDto({
+            id: msg.chat.id,
+            username: msg.chat.username || null,
+            firstName: msg.chat.first_name || null,
+            lastName: msg.chat.last_name || null
+          })
+          user = new UserModel({ ...userDto })
           await user.add()
         }
         const receive = new ReceiveService(msg, user)
@@ -29,10 +33,13 @@ const listenTg = async () => {
       try {
         let user = await UserModel.getUser(msg.from.id)
         if (!user.id) {
-          const username = msg.from.username || null
-          const firstName = msg.from.first_name || null
-          const lastName = msg.from.last_name || null
-          user = new UserModel(msg.from.id, username, firstName, lastName)
+          const userDto = new UserDto({
+            id: msg.from.id,
+            username: msg.from.username || null,
+            firstName: msg.from.first_name || null,
+            lastName: msg.from.last_name || null
+          })
+          user = new UserModel({ ...userDto })
           await user.add()
         }
 
