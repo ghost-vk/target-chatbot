@@ -7,6 +7,8 @@ const { listenTg } = require('./services/tg-listener.service')
 const scheduleWork = require('./services/shedule.service')
 const debug = require('debug')('http')
 const CurrencyService = require('./services/currency.service')
+const fs = require('fs')
+const https = require('https')
 
 // Routes
 const botRoute = require('./routes/bot.route')
@@ -34,7 +36,22 @@ const start = async () => {
     await listenTg()
 
     if (config.IS_PRODUCTION) {
+      const httpsServer = https.createServer(
+        {
+          key: fs.readFileSync('/etc/letsencrypt/live/anastasi-target.ru/privkey.pem'),
+          cert: fs.readFileSync('/etc/letsencrypt/live/anastasi-target.ru/cert.pem'),
+          ca: fs.readFileSync('/etc/letsencrypt/live/anastasi-target.ru/chain.pem'),
+        },
+        app
+      )
+      httpsServer.listen(config.PORT, () => {
+        debug(`Production https server is listening on port %d ...`, config.PORT)
+      })
       await CurrencyService.updateCurrency()
+    } else {
+      app.listen(config.PORT, () => {
+        debug(`Development http server is listening on port %d ...`, config.PORT)
+      })
     }
   } catch (e) {
     debug('Error occurs when start app: %O', e)

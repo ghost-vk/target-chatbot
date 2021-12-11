@@ -73,12 +73,6 @@ module.exports = {
     this.URL = url
   },
 
-  setHost(host) {
-    this.HOST = host
-  },
-
-
-
   getCurrency() {
     return currencyUsdRub
   },

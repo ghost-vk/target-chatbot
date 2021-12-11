@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "dev": "NODE_ENV=development DEBUG=* nodemon app.js"
+    "dev": "NODE_ENV=development DEBUG=* nodemon app.js",
+    "production-debug": "NODE_ENV=production DEBUG=* node app.js"
   },
   "author": "ghost-vk",
   "license": "ISC",

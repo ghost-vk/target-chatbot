@@ -4,15 +4,18 @@ const UserModel = require('./../models/user.model')
 const debug = require('debug')('service:bot')
 const sleep = require('./../utils/sleep.util')
 
+
 const bot = IS_DEV
   ? new TelegramBot(BOT_TOKEN, { webHook: true })
   : new TelegramBot(BOT_TOKEN, {
       webHook: {
         port: PORT,
         host: HOST,
-        key: '/etc/letsencrypt/live/anastasi-target.ru/privkey.pem',
-        cert: '/etc/letsencrypt/live/anastasi-target.ru/cert.pem',
-        pfx: '/etc/letsencrypt/live/anastasi-target.ru/chain.pem',
+        https: {
+          key: '/etc/letsencrypt/live/anastasi-target.ru/privkey.pem',
+          cert: '/etc/letsencrypt/live/anastasi-target.ru/cert.pem',
+          ca: '/etc/letsencrypt/live/anastasi-target.ru/chain.pem',
+        }
       },
     })
 
