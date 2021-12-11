@@ -1,8 +1,6 @@
 const config = require('./config')
 const express = require('express')
 const app = express()
-const https = require('https')
-const fs = require('fs')
 const errorMiddleware = require('./middleware/error.middleware')
 const { bot } = require('./services/bot.service')
 const { listenTg } = require('./services/tg-listener.service')
@@ -24,7 +22,7 @@ app.all('*', (req, res) => {
 app.use(errorMiddleware)
 
 if (config.IS_DEV) {
-  config.setUrl('https://ae9f-178-178-96-20.ngrok.io')
+  config.setUrl('https://0e76-178-178-96-20.ngrok.io')
 }
 
 scheduleWork()
@@ -37,19 +35,6 @@ const start = async () => {
 
     if (config.IS_PRODUCTION) {
       await CurrencyService.updateCurrency()
-      const httpsServer = https.createServer(
-        {
-          key: fs.readFileSync('/etc/letsencrypt/live/anastasi-target.ru/privkey.pem'),
-          cert: fs.readFileSync('/etc/letsencrypt/live/anastasi-target.ru/cert.pem'),
-          ca: fs.readFileSync('/etc/letsencrypt/live/anastasi-target.ru/chain.pem'),
-        },
-        app
-      )
-      httpsServer.listen(config.PORT, () => {})
-    } else {
-      app.listen(config.PORT, () => {
-        debug(`Development http server is listening on port %d ...`, config.PORT)
-      })
     }
   } catch (e) {
     debug('Error occurs when start app: %O', e)

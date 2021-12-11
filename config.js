@@ -5,6 +5,7 @@ let currencyUsdRub = 75
 module.exports = {
   BOT_TOKEN: process.env.BOT_TOKEN,
   PORT: process.env.PORT,
+  HOST: process.env.HOST,
   URL: process.env.URL || '',
   GHOST_ID: process.env.GHOST_ID,
   IS_PRODUCTION: process.env.NODE_ENV === 'production',
@@ -71,6 +72,12 @@ module.exports = {
   setUrl(url) {
     this.URL = url
   },
+
+  setHost(host) {
+    this.HOST = host
+  },
+
+
 
   getCurrency() {
     return currencyUsdRub
