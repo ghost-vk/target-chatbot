@@ -37,6 +37,7 @@ module.exports = {
     subscription: { code: 'subscription', name: '⏳ Подписки' },
     material: { code: 'material', name: '📚 Материалы' },
     service: { code: 'service', name: '👩🏻‍💻 Услуги' },
+    free: { code: 'free', name: '😊 Бесплатные материалы'}
   },
 
   adminAction: '',

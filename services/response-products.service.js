@@ -40,32 +40,36 @@ class ResponseProductsService {
         }
       } else if (payload && anchor) {
         product = await ProductModel.getProductFromDatabase(payload, 'message_code')
-        await OrderService.closeAllOpenedOrders(user.id)
-        const order = new OrderModel(user.id, product.id)
-        await order.addOrder()
+        if (product.type === productCategory.free.code) {
+          return ResponseService.freeProductDownload(product, user.id, anchor)
+        } else {
+          await OrderService.closeAllOpenedOrders(user.id)
+          const order = new OrderModel(user.id, product.id)
+          await order.addOrder()
 
-        // Save history for analytics
-        const cartHistory = new CartHistoryModel(user.id, Number(product.id))
-        const existHistoryArray = await CartHistoryService.getUserHistory(user.id)
-        if (!existHistoryArray.find((h) => h.productId === cartHistory.productId)) {
-          await cartHistory.addProductToCartHistory()
-        }
+          // Save history for analytics
+          const cartHistory = new CartHistoryModel(user.id, Number(product.id))
+          const existHistoryArray = await CartHistoryService.getUserHistory(user.id)
+          if (!existHistoryArray.find((h) => h.productId === cartHistory.productId)) {
+            await cartHistory.addProductToCartHistory()
+          }
 
-        return {
-          type: 'edit',
-          text: i18n.__('products.product_info', {
-            priceUsd: currencyFilter(product.priceUsd),
-            priceRub: currencyFilter(product.priceUsd, 'RUB'),
-            duration: product.duration,
-            title: product.title,
-            subtitle: product.subtitle,
-          }),
-          options: {
-            chat_id: user.id,
-            message_id: anchor,
-            reply_markup: ResponseService.payConfirmKeyboard(anchor).getMarkup(),
-            parse_mode: 'markdown',
-          },
+          return {
+            type: 'edit',
+            text: i18n.__('products.product_info', {
+              priceUsd: currencyFilter(product.priceUsd),
+              priceRub: currencyFilter(product.priceUsd, 'RUB'),
+              duration: product.duration,
+              title: product.title,
+              subtitle: product.subtitle,
+            }),
+            options: {
+              chat_id: user.id,
+              message_id: anchor,
+              reply_markup: ResponseService.payConfirmKeyboard(anchor).getMarkup(),
+              parse_mode: 'markdown',
+            },
+          }
         }
       }
     } catch (e) {

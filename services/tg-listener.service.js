@@ -19,6 +19,7 @@ const listenTg = async () => {
           })
           user = new UserModel({ ...userDto })
           await user.add()
+          user.setNew()
         }
         const receive = new ReceiveService(msg, user)
         const responses = await receive.handleMessage()
@@ -41,6 +42,7 @@ const listenTg = async () => {
           })
           user = new UserModel({ ...userDto })
           await user.add()
+          user.setNew()
         }
 
         debug('Got callback_query message: %O', msg)

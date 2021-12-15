@@ -123,12 +123,15 @@ class ReceiveService {
               await order.updateStatus(config.orderStatus.closed)
             }
           }
-          const startMessage = ResponseService.genStartMessage(this.user)
           const catList = ResponseProductsService.genProductCategoryList(
             this.user,
-            Number(this.user.field('lastIncome')) + 2 // 2 sending messages
+            Number(this.user.field('lastIncome')) + 1
           )
-          responses.push(startMessage, catList)
+          responses.push(catList)
+          if (this.user.isNew) {
+            const helloMessage = ResponseService.genHelloMessage(this.user)
+            responses.unshift(helloMessage)
+          }
           return responses
         }
         case config.adminCommands.admin: {

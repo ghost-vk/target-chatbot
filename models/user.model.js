@@ -8,6 +8,7 @@ class UserModel {
   lastName
   lastIncome // last message sent from bot
   lastEcho
+  isNew
 
   constructor(dto) {
     this.id = Number(dto.id)
@@ -104,6 +105,10 @@ class UserModel {
     } catch (e) {
       throw new Error('Error when ban user')
     }
+  }
+
+  setNew() {
+    this.isNew = true
   }
 }
 

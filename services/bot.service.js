@@ -1,23 +1,11 @@
 const TelegramBot = require('node-telegram-bot-api')
-const { BOT_TOKEN, GHOST_ID, IS_DEV, PORT, HOST } = require('./../config')
+const { BOT_TOKEN, GHOST_ID } = require('./../config')
 const UserModel = require('./../models/user.model')
 const debug = require('debug')('service:bot')
 const sleep = require('./../utils/sleep.util')
 
 
-const bot = IS_DEV
-  ? new TelegramBot(BOT_TOKEN, { webHook: true })
-  : new TelegramBot(BOT_TOKEN, {
-      webHook: {
-        port: PORT,
-        host: HOST,
-        https: {
-          key: '/etc/letsencrypt/live/anastasi-target.ru/privkey.pem',
-          cert: '/etc/letsencrypt/live/anastasi-target.ru/cert.pem',
-          ca: '/etc/letsencrypt/live/anastasi-target.ru/chain.pem',
-        }
-      },
-    })
+const bot = new TelegramBot(BOT_TOKEN)
 
 const handleResponse = async (response) => {
   let args = []

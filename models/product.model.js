@@ -10,6 +10,7 @@ class ProductModel {
   messageCode
   channelId
   secretLink
+  type
 
   constructor(id, title, subtitle, duration, priceUsd, priceRub, messageCode, channelId, secretLink, type) {
     this.id = id

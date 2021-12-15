@@ -39,6 +39,14 @@ class ResponseService {
     }
   }
 
+  static genHelloMessage(user) {
+    return {
+      type: 'message',
+      chatId: user.id,
+      text: i18n.__('hello'),
+    }
+  }
+
   static genUnpredictableBehaviour(user, message) {
     return [
       {
@@ -210,6 +218,28 @@ class ResponseService {
     return new InlineKeyboard(
       new Row(new InlineKeyboardButton('Получить материал', 'url', link))
     )
+  }
+
+  static freeProductDownload(product, userId, anchor) {
+    const kb = new InlineKeyboard(
+      new Row(
+        new InlineKeyboardButton('Перейти', 'url', product.secretLink),
+      ),
+      new Row(
+        new InlineKeyboardButton('Назад', 'callback_data', `CATEGORY_FREE#${anchor}`)
+      )
+    )
+
+    return {
+      type: 'edit',
+      text: i18n.__('products.free_product_info', { title: product.title, subtitle: product.subtitle }),
+      options: {
+        chat_id: userId,
+        message_id: anchor,
+        reply_markup: kb.getMarkup(),
+        parse_mode: 'markdown',
+      },
+    }
   }
 }
 
