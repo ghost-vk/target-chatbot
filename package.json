@@ -4,7 +4,8 @@
   "main": "app.js",
   "scripts": {
     "dev": "NODE_ENV=development DEBUG=* nodemon app.js",
-    "production-debug": "NODE_ENV=production DEBUG=* node app.js"
+    "production-debug": "NODE_ENV=production DEBUG=* node app.js",
+    "forever": "NODE_ENV=production forever start -m 5 -e ./../logs/err.log --spinSleepTime 6000 app.js"
   },
   "author": "ghost-vk",
   "license": "ISC",
