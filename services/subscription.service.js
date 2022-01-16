@@ -13,8 +13,9 @@ const sleep = require('./../utils/sleep.util')
 
 let subscriptionsBatch = []
 let errorTimes = 0
-let currentIndex = null
 let errorSubscriptionId = null
+let currentIndex = null
+let errorIndex = null
 
 class SubscriptionService {
   subscription
@@ -140,6 +141,10 @@ class SubscriptionService {
 
       // go through batch
       for (const [i, s] of subscriptionsBatch.entries()) {
+        if (errorIndex && i <= errorIndex) {
+          continue
+        }
+
         currentIndex = i
         errorSubscriptionId = s.id
 
@@ -177,6 +182,8 @@ class SubscriptionService {
           })
           await user.setLastEchoMessageId(message.message_id)
         }
+
+        errorTimes = 0
       }
 
       subscriptionsBatch = []
@@ -185,18 +192,15 @@ class SubscriptionService {
       if (errorTimes > 3) {
         throw new Error(e)
       }
+      errorIndex = currentIndex
       errorTimes += 1
-
-      if (currentIndex) {
-        subscriptionsBatch.splice(0, currentIndex + 1)
-      }
 
       await bot.sendMessage(
         GHOST_ID,
-        `🔴 Ошибка при обработке подписки [ID=${errorSubscriptionId}]\nПробую продолжить идти по списку...`
+        `🔴 Ошибка при обработке подписки [ID=${errorSubscriptionId}]:\n${e}\nПробую продолжить идти по списку...`
       )
+
       await this.handleSubscriptions()
-      errorTimes = 0
     }
   }
 }
