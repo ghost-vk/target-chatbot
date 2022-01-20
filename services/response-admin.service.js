@@ -161,7 +161,8 @@ class ResponseAdminService {
         }
 
         if (!subscription) {
-          subscription = await SubscriptionService.addNewSubscriptionForMonth(order.userId, order.id)
+          // todo сделать отсроченные приглашения для потоковых подписок
+          // subscription = await SubscriptionService.addNewSubscriptionForMonth(order.userId, order.id)
         }
 
         if (renew) {
