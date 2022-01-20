@@ -179,7 +179,7 @@ class ResponseAdminService {
             type: 'message',
             chatId: order.userId,
             text: i18n.__('order.confirmed_subscription'),
-            form: { reply_markup: ResponseService.genRequestInviteKeyboard(subscription.id).getMarkup() },
+            // form: { reply_markup: ResponseService.genRequestInviteKeyboard(subscription.id).getMarkup() },
           }
         }
       } else if (product.type === config.productCategory.material.code) {
