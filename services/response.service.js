@@ -10,8 +10,9 @@ const {
 const { GHOST_ID } = require('../config')
 
 const userKb = new ReplyKeyboard(
-  new Row(new KeyboardButton(config.userCommands.subscriptions), new KeyboardButton(config.userCommands.products)),
-  new Row(new KeyboardButton(config.userCommands.history))
+  // new Row(new KeyboardButton(config.userCommands.subscriptions), new KeyboardButton(config.userCommands.products)),
+  // new Row(new KeyboardButton(config.userCommands.history))
+  new Row(new KeyboardButton(config.userCommands.products), new KeyboardButton(config.userCommands.history)),
 )
 
 const userKbSupport = userKb.clone()
@@ -20,7 +21,7 @@ userKbSupport.push(new Row(new KeyboardButton(config.userCommands.support)))
 const adminKb = new ReplyKeyboard(
   new Row(new KeyboardButton(config.adminCommands.confirm), new KeyboardButton(config.adminCommands.reject)),
   new Row(new KeyboardButton(config.adminCommands.orders), new KeyboardButton(config.adminCommands.ban)),
-  new Row(new KeyboardButton(config.userCommands.subscriptions), new KeyboardButton(config.userCommands.products)),
+  // new Row(new KeyboardButton(config.userCommands.subscriptions), new KeyboardButton(config.userCommands.products)),
   new Row(new KeyboardButton(config.userCommands.history)),
   new Row(new KeyboardButton(config.adminCommands.sendTestMessageToChannel))
 )
@@ -215,19 +216,13 @@ class ResponseService {
   }
 
   static genSecretLink(link) {
-    return new InlineKeyboard(
-      new Row(new InlineKeyboardButton('Получить материал', 'url', link))
-    )
+    return new InlineKeyboard(new Row(new InlineKeyboardButton('Получить материал', 'url', link)))
   }
 
   static freeProductDownload(product, userId, anchor) {
     const kb = new InlineKeyboard(
-      new Row(
-        new InlineKeyboardButton('Перейти', 'url', product.secretLink),
-      ),
-      new Row(
-        new InlineKeyboardButton('Назад', 'callback_data', `CATEGORY_FREE#${anchor}`)
-      )
+      new Row(new InlineKeyboardButton('Перейти', 'url', product.secretLink)),
+      new Row(new InlineKeyboardButton('Назад', 'callback_data', `CATEGORY_FREE#${anchor}`))
     )
 
     return {

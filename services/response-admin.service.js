@@ -2,14 +2,14 @@ const config = require('./../config')
 const ResponseService = require('./response.service')
 const OrderModel = require('./../models/order.model')
 const ProductModel = require('./../models/product.model')
-const SubscriptionService = require('./subscription.service')
 const PaymentMethodModel = require('./../models/payment-method.model')
 const OrderService = require('./order.service')
 const i18n = require('./../i18n.config')
 const axios = require('axios')
-const { dateToYmd } = require('./../filters/date-to-ymd.filter')
 const currencyFilter = require('./../filters/currency.filter')
 const UserService = require('./user.service')
+// const SubscriptionService = require('./subscription.service')
+// const { dateToYmd } = require('./../filters/date-to-ymd.filter')
 
 class ResponseAdminService {
   static async handleCommand(user, message) {
@@ -136,53 +136,55 @@ class ResponseAdminService {
 
       let firstMessage
 
-      if (product.type === config.productCategory.subscription.code) {
-        let subscription = null
-        let renew = false
-        const existUserSubscriptions = await SubscriptionService.getUserSubscriptionHistory(order.userId)
+      // if (product.type === config.productCategory.subscription.code) {
+      //   let subscription = null
+      //   let renew = false
+      //   const existUserSubscriptions = await SubscriptionService.getUserSubscriptionHistory(order.userId)
+      //
+      //   await axios.post(config.TELEGRAM_API + '/unbanChatMember', {
+      //     chat_id: product.channelId,
+      //     user_id: order.userId,
+      //     only_if_banned: true
+      //   })
+      //
+      //   if (existUserSubscriptions.length !== 0) {
+      //     for (const s of existUserSubscriptions) {
+      //       const oldOrder = await OrderModel.getOrderFromDatabase(s.orderId)
+      //       if (oldOrder.productId === order.productId) {
+      //         const end = new Date(s.endDate)
+      //         end.setMonth(end.getMonth() + 1)
+      //         subscription = await s.renewSubscription(end)
+      //         subscription = await s.updateOrderId(orderId)
+      //         renew = true
+      //       }
+      //     }
+      //   }
+      //
+      //   if (!subscription) {
+      //     subscription = await SubscriptionService.addNewSubscriptionForMonth(order.userId, order.id)
+      //   }
+      //
+      //   if (renew) {
+      //     firstMessage = {
+      //       type: 'message',
+      //       chatId: order.userId,
+      //       text: i18n.__('notifications.renew', {
+      //         title: product.title,
+      //         date: dateToYmd(subscription.endDate),
+      //       }),
+      //       form: { parse_mode: 'markdown' },
+      //     }
+      //   } else {
+      //     firstMessage = {
+      //       type: 'message',
+      //       chatId: order.userId,
+      //       text: i18n.__('order.confirmed_subscription'),
+      //       // form: { reply_markup: ResponseService.genRequestInviteKeyboard(subscription.id).getMarkup() },
+      //     }
+      //   }
+      // }
 
-        await axios.post(config.TELEGRAM_API + '/unbanChatMember', {
-          chat_id: product.channelId,
-          user_id: order.userId,
-          only_if_banned: true
-        })
-
-        if (existUserSubscriptions.length !== 0) {
-          for (const s of existUserSubscriptions) {
-            const oldOrder = await OrderModel.getOrderFromDatabase(s.orderId)
-            if (oldOrder.productId === order.productId) {
-              const end = new Date(s.endDate)
-              end.setMonth(end.getMonth() + 1)
-              subscription = await s.renewSubscription(end)
-              subscription = await s.updateOrderId(orderId)
-              renew = true
-            }
-          }
-        }
-
-        if (!subscription) {
-          subscription = await SubscriptionService.addNewSubscriptionForMonth(order.userId, order.id)
-        }
-
-        if (renew) {
-          firstMessage = {
-            type: 'message',
-            chatId: order.userId,
-            text: i18n.__('notifications.renew', {
-              title: product.title,
-              date: dateToYmd(subscription.endDate),
-            }),
-            form: { parse_mode: 'markdown' },
-          }
-        } else {
-          firstMessage = {
-            type: 'message',
-            chatId: order.userId,
-            text: i18n.__('order.confirmed_subscription'),
-            // form: { reply_markup: ResponseService.genRequestInviteKeyboard(subscription.id).getMarkup() },
-          }
-        }
-      } else if (product.type === config.productCategory.material.code) {
+      if (product.type === config.productCategory.material.code) {
         firstMessage = {
           type: 'message',
           chatId: order.userId,

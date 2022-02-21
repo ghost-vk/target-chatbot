@@ -3,11 +3,11 @@ const OrderService = require('./order.service')
 const ProductModel = require('./../models/product.model')
 const OrderModel = require('./../models/order.model')
 const SubscriptionService = require('./subscription.service')
-const SubscriptionModel = require('./../models/subscriptions.model')
 const ResponseProductsService = require('./response-products.service')
 const i18n = require('./../i18n.config')
 const ResponseService = require('./response.service')
 const { dateToYmd } = require('./../filters/date-to-ymd.filter')
+// const SubscriptionModel = require('./../models/subscriptions.model')
 
 class ResponseUserService {
   static async handleCommand(user, message) {
@@ -100,14 +100,16 @@ class ResponseUserService {
         text += `=== ${i} ===\n\n`
 
         switch (product.type) {
-          case productCategory.subscription.code: {
-            text += 'Подписка\n'
-            break
-          }
+          // case productCategory.subscription.code: {
+          //   text += 'Подписка\n'
+          //   break
+          // }
+
           case productCategory.service.code: {
             text += 'Услуга\n'
             break
           }
+
           case productCategory.material.code: {
             text += 'Обучающий материал\n'
             break
@@ -116,11 +118,11 @@ class ResponseUserService {
 
         text += `*${product.title}*\n`
 
-        if (product.type === productCategory.subscription.code) {
-          const s = await SubscriptionModel.getSubscriptionFromDatabaseByOrderId(o.id)
-          text += `${dateToYmd(s.startDate)} - ${dateToYmd(s.endDate)}\n`
-          text += s.isExpired ? '🔘 Срок действия истек\n\n' : '✅ Подписка активна\n\n'
-        }
+        // if (product.type === productCategory.subscription.code) {
+        //   const s = await SubscriptionModel.getSubscriptionFromDatabaseByOrderId(o.id)
+        //   text += `${dateToYmd(s.startDate)} - ${dateToYmd(s.endDate)}\n`
+        //   text += s.isExpired ? '🔘 Срок действия истек\n\n' : '✅ Подписка активна\n\n'
+        // }
 
         i += 1
       }

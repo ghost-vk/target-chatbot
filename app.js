@@ -24,7 +24,7 @@ app.all('*', (req, res) => {
 app.use(errorMiddleware)
 
 if (config.IS_DEV) {
-  config.setUrl('https://27a0-178-178-96-20.ngrok.io')
+  config.setUrl('https://8091-91-215-89-189.ngrok.io')
 }
 
 scheduleWork()
