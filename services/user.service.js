@@ -1,3 +1,4 @@
+const axios = require('axios')
 const db = require('./../db')
 const UserModel = require('./../models/user.model')
 const UserDto = require('./../dtos/user.dto')
@@ -57,6 +58,10 @@ class UserService {
     } catch (e) {
       throw new Error(e)
     }
+  }
+
+  async createUser() {
+
   }
 }
 

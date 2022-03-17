@@ -79,13 +79,17 @@ class UserModel {
       if (!['id', 'username'].includes(field)) {
         throw new Error('Not acceptable field to get user from database.')
       }
+
       const result = await db.query(`SELECT * FROM users WHERE ${field} = $1`, [
         key,
       ])
+
       if (result.rows.length === 0) {
-        return {}
+        return false
       }
+
       const userDto = new UserDto(result.rows[0])
+
       return new UserModel({ ...userDto })
     } catch (e) {
       throw new Error(e)

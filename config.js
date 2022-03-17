@@ -1,12 +1,16 @@
 require('dotenv').config()
 
 let currencyUsdRub = 75
+let apiToken = ''
 
 module.exports = {
   BOT_TOKEN: process.env.BOT_TOKEN,
   PORT: process.env.PORT,
   HOST: process.env.HOST,
   URL: process.env.URL || '',
+  API_URL: process.env.API_URL,
+  API_LOGIN: process.env.API_LOGIN,
+  API_PASSWORD: process.env.API_PASSWORD,
   GHOST_ID: process.env.GHOST_ID,
   IS_PRODUCTION: process.env.NODE_ENV === 'production',
   IS_DEV: process.env.NODE_ENV !== 'production',
@@ -17,6 +21,7 @@ module.exports = {
   TELEGRAM_API: `https://api.telegram.org/bot${process.env.BOT_TOKEN}`,
   CURRENCY_LAYER_KEY: process.env.CURRENCY_LAYER_KEY,
   SUPPORT_URL: process.env.SUPPORT_URL,
+  SCHOOL_URL: process.env.SCHOOL_URL,
 
   orderStatus: {
     opened: 'opened',
@@ -35,9 +40,10 @@ module.exports = {
 
   productCategory: {
     // subscription: { code: 'subscription', name: '⏳ Подписки' },
-    material: { code: 'material', name: '📚 Материалы' },
-    service: { code: 'service', name: '👩🏻‍💻 Услуги' },
-    free: { code: 'free', name: '😊 Бесплатные материалы'}
+    courses: { code: 'courses', name: 'Курсы' },
+    material: { code: 'material', name: 'Материалы' },
+    service: { code: 'service', name: 'Услуги' },
+    free: { code: 'free', name: 'Бесплатные материалы'}
   },
 
   adminAction: '',
@@ -84,4 +90,18 @@ module.exports = {
       currencyUsdRub = Math.round(currencyNum)
     }
   },
+
+  /**
+   * @param {string} token
+   */
+  setApiToken(token) {
+    apiToken = token
+  },
+
+  /**
+   * @return {string} token
+   */
+  getApiToken() {
+    return apiToken
+  }
 }

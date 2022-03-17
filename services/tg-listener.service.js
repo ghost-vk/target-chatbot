@@ -8,8 +8,10 @@ const listenTg = async () => {
   try {
     bot.on('message', async (msg) => {
       debug('Got message: %O', msg)
+
       try {
         let user = await UserModel.getUser(msg.chat.id)
+
         if (!user.id) {
           const userDto = new UserDto({
             id: msg.chat.id,
@@ -23,9 +25,13 @@ const listenTg = async () => {
         }
         const receive = new ReceiveService(msg, user)
         const responses = await receive.handleMessage()
+
+        debug('Calculated responses: %O', responses)
+
         const sentMessages = await sendMessages(responses)
         debug('Sent messages: %O', sentMessages)
       } catch (e) {
+        debug('Error in listener: %O', e)
         throw new Error(e)
       }
     })

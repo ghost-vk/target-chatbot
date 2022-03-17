@@ -1,3 +1,6 @@
+const to = require('await-to-js').default
+const axios = require('axios')
+const api = require('./../boot/axios')
 const config = require('./../config')
 const ResponseService = require('./response.service')
 const OrderModel = require('./../models/order.model')
@@ -5,11 +8,9 @@ const ProductModel = require('./../models/product.model')
 const PaymentMethodModel = require('./../models/payment-method.model')
 const OrderService = require('./order.service')
 const i18n = require('./../i18n.config')
-const axios = require('axios')
 const currencyFilter = require('./../filters/currency.filter')
 const UserService = require('./user.service')
-// const SubscriptionService = require('./subscription.service')
-// const { dateToYmd } = require('./../filters/date-to-ymd.filter')
+const UserFactoryService = require('./user-factory.service')
 
 class ResponseAdminService {
   static async handleCommand(user, message) {
@@ -61,7 +62,7 @@ class ResponseAdminService {
           return {
             type: 'message',
             chatId: user.id,
-            text: 'Отправьте сообщение для рассылки (всем)'
+            text: 'Отправьте сообщение для рассылки (всем)',
           }
         }
         case config.adminCommands.mailingAllWithoutSubscribers: {
@@ -69,7 +70,7 @@ class ResponseAdminService {
           return {
             type: 'message',
             chatId: user.id,
-            text: 'Отправьте сообщение для рассылки (всем без подписчиков)'
+            text: 'Отправьте сообщение для рассылки (всем без подписчиков)',
           }
         }
         case config.adminCommands.mailingSubscribers: {
@@ -77,7 +78,7 @@ class ResponseAdminService {
           return {
             type: 'message',
             chatId: user.id,
-            text: 'Отправьте сообщение для рассылки (подписчикам)'
+            text: 'Отправьте сообщение для рассылки (подписчикам)',
           }
         }
       }
@@ -134,69 +135,66 @@ class ResponseAdminService {
       const order = await OrderModel.getOrderFromDatabase(orderId)
       const product = await ProductModel.getProductFromDatabase(order.productId)
 
-      let firstMessage
-
-      // if (product.type === config.productCategory.subscription.code) {
-      //   let subscription = null
-      //   let renew = false
-      //   const existUserSubscriptions = await SubscriptionService.getUserSubscriptionHistory(order.userId)
-      //
-      //   await axios.post(config.TELEGRAM_API + '/unbanChatMember', {
-      //     chat_id: product.channelId,
-      //     user_id: order.userId,
-      //     only_if_banned: true
-      //   })
-      //
-      //   if (existUserSubscriptions.length !== 0) {
-      //     for (const s of existUserSubscriptions) {
-      //       const oldOrder = await OrderModel.getOrderFromDatabase(s.orderId)
-      //       if (oldOrder.productId === order.productId) {
-      //         const end = new Date(s.endDate)
-      //         end.setMonth(end.getMonth() + 1)
-      //         subscription = await s.renewSubscription(end)
-      //         subscription = await s.updateOrderId(orderId)
-      //         renew = true
-      //       }
-      //     }
-      //   }
-      //
-      //   if (!subscription) {
-      //     subscription = await SubscriptionService.addNewSubscriptionForMonth(order.userId, order.id)
-      //   }
-      //
-      //   if (renew) {
-      //     firstMessage = {
-      //       type: 'message',
-      //       chatId: order.userId,
-      //       text: i18n.__('notifications.renew', {
-      //         title: product.title,
-      //         date: dateToYmd(subscription.endDate),
-      //       }),
-      //       form: { parse_mode: 'markdown' },
-      //     }
-      //   } else {
-      //     firstMessage = {
-      //       type: 'message',
-      //       chatId: order.userId,
-      //       text: i18n.__('order.confirmed_subscription'),
-      //       // form: { reply_markup: ResponseService.genRequestInviteKeyboard(subscription.id).getMarkup() },
-      //     }
-      //   }
-      // }
+      let responses = []
+      let firstMessage = {}
 
       if (product.type === config.productCategory.material.code) {
         firstMessage = {
           type: 'message',
           chatId: order.userId,
           text: i18n.__('order.confirmed_material'),
-          form: { reply_markup: ResponseService.genSecretLink(product.secretLink).getMarkup() }
+          form: { reply_markup: ResponseService.genSecretLink(product.secretLink).getMarkup() },
+        }
+      } else if (product.type === config.productCategory.courses.code) {
+        let err
+        let registrationData
+        ;[err, registrationData] = await to(UserFactoryService.createLoginAndPassword(order.userId))
+
+        if (err) {
+          responses.push({
+            type: 'message',
+            chatId: user.id,
+            text: `Ошибка при создании пользователя.\nOrder: ${order.id}\nUserID: ${order.userId}\nError: ${err.message}`,
+          })
+        }
+
+        let createdUserResponse
+        if (registrationData) {
+          const requestData = {
+            data: {
+              ...registrationData,
+              attachedCourses: UserFactoryService.getCoursesRequestMarkup(product)
+            },
+          }
+
+          ;[err, createdUserResponse] = await to(api.post('/users/createWithLogin', requestData))
+
+          if (err) {
+            responses.push({
+              type: 'message',
+              chatId: user.id,
+              text: `Ошибка при создании пользователя.\nOrder: ${order.id}\nUserID: ${order.userId}\nError: ${err.message}`,
+            })
+          }
+
+          const { login, password } = createdUserResponse.data.user
+
+          if (!createdUserResponse.data.availableCourses) {
+            responses.push({
+              type: 'message',
+              chatId: user.id,
+              text: `Не удалось добавить курс пользователю.\nOrder: ${order.id}\nUserID: ${order.userId}`,
+            })
+          }
+
+          responses.push(ResponseService.genWelcomeToSchool(order.userId, login, password))
         }
       } else {
         firstMessage = {
           type: 'message',
           chatId: order.userId,
           text: i18n.__('order.confirmed_service'),
-          form: { reply_markup: ResponseService.supportReplyKeyboard().getMarkup() }
+          form: { reply_markup: ResponseService.supportReplyKeyboard().getMarkup() },
         }
       }
 
@@ -204,14 +202,19 @@ class ResponseAdminService {
 
       config.resetAdminAction()
 
-      return [
-        firstMessage,
+      const confirmResponses = [
         {
           type: 'message',
           chatId: config.GHOST_ID,
           text: `✅ Заказ [ID=${order.id}] был успешно подтвержден`,
         },
       ]
+
+      if (firstMessage.type) confirmResponses.prepend(firstMessage)
+
+      if (responses.length > 0) responses.forEach((r) => confirmResponses.push(r))
+
+      return confirmResponses
     } catch (e) {
       console.error(e)
       throw new Error(e)
@@ -373,7 +376,8 @@ class ResponseAdminService {
       let i = 0
       let messages = []
       for (const u of users) {
-        if (('' + u.id).startsWith('-')) { // channels
+        if (('' + u.id).startsWith('-')) {
+          // channels
           continue
         }
         i += 1
@@ -381,13 +385,13 @@ class ResponseAdminService {
           type: 'mail',
           chatId: u.id,
           delay: 500,
-          text: message
+          text: message,
         })
       }
       messages.unshift({
         type: 'message',
         chatId: config.GHOST_ID,
-        text: `Начинаю рассылку ${i} адресатам ...`
+        text: `Начинаю рассылку ${i} адресатам ...`,
       })
       return messages
     } catch (e) {

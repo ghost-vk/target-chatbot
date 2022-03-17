@@ -17,6 +17,7 @@ class ResponseProductsService {
       let payload
       let anchor
       const split = data.split('#')
+
       payload = split.length > 1 ? split[0] : data
       anchor = split.length > 1 ? split[1] : null
 
@@ -25,6 +26,7 @@ class ResponseProductsService {
 
         const products = await ProductService.getAllProducts()
         const productsKb = new InlineKeyboard()
+
         for (const p of products) {
           productsKb.push(new Row(new InlineKeyboardButton(p.title, 'callback_data', `${p.messageCode}#${anchor}`)))
         }
@@ -40,6 +42,7 @@ class ResponseProductsService {
         }
       } else if (payload && anchor) {
         product = await ProductModel.getProductFromDatabase(payload, 'message_code')
+
         if (product.type === productCategory.free.code) {
           return ResponseService.freeProductDownload(product, user.id, anchor)
         } else {

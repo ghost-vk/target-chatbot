@@ -19,22 +19,9 @@ class ProductService {
         return []
       }
       let products = []
-      result.rows.forEach((row) => {
-        products.push(
-          new ProductModel(
-            row.id,
-            row.title,
-            row.subtitle,
-            row.duration,
-            row.price_usd,
-            row.price_rub,
-            row.message_code,
-            row.channel_id,
-            row.secret_link,
-            row.type
-          )
-        )
-      })
+
+      result.rows.forEach((row) => products.push(new ProductModel(row)))
+
       return products
     } catch (e) {
       throw new Error(e)

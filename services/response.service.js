@@ -30,6 +30,10 @@ const supportInlineButton = new InlineKeyboard(
   new Row(new InlineKeyboardButton('🟢 Поддержка', 'url', config.SUPPORT_CHAT_LINK))
 )
 
+const schoolLoginButton = new InlineKeyboard(
+  new Row(new InlineKeyboardButton('Начать обучение', 'url', config.SCHOOL_URL))
+)
+
 class ResponseService {
   static genStartMessage(user) {
     return {
@@ -234,6 +238,23 @@ class ResponseService {
         reply_markup: kb.getMarkup(),
         parse_mode: 'markdown',
       },
+    }
+  }
+
+  /**
+   * @param {string|number} chatId
+   * @param {string} login
+   * @param {string} password
+   */
+  static genWelcomeToSchool(chatId, login, password) {
+    return {
+      type: 'message',
+      chatId,
+      text: i18n.__('school_login', { login, password }),
+      form: {
+        reply_markup: schoolLoginButton.getMarkup(),
+        parse_mode: 'markdown'
+      }
     }
   }
 }

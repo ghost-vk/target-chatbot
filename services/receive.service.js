@@ -33,11 +33,13 @@ class ReceiveService {
         config.orderStatus.waitingReceipt,
         config.orderStatus.waitingConfirm,
       ])
+
       if (userOrders.length > 1) {
         debug('User have >1 active orders')
       }
-      // only one active order
+
       let activeOrder = userOrders.length > 0 ? userOrders[0] : ''
+
       switch (activeOrder.status) {
         case config.orderStatus.waitingReceipt: {
           if (config.isAdmin(this.user.id) && Object.values(config.adminCommands).includes(this.message.text)) {

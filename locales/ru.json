@@ -33,5 +33,6 @@
 		"the_end": "Ваша подписка закончилась ({{ title }})",
 		"the_end_to_admin": "Закончилась подписка у пользователя:\nUserID: `{{ userId }}`\nUsername: `{{ username }}`\nSubscriptionID: `{{ subscriptionId }}`",
 		"renew": "✅ Подписка *{{ title }}* продлена до *{{ date }}*"
-	}
+	},
+	"school_login": "Ваши данные для входа:\n\nЛогин: `{{ login }}`\nПароль: `{{ password }}`\n\nЧтобы скопировать логин/пароль нажмите на него"
 }
