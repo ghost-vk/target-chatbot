@@ -169,25 +169,25 @@ class ResponseAdminService {
 
           ;[err, createdUserResponse] = await to(api.post('/users/createWithLogin', requestData))
 
-          if (err) {
+          if (err || !createdUserResponse || createdUserResponse.status !== 'ok') {
             responses.push({
               type: 'message',
               chatId: user.id,
               text: `Ошибка при создании пользователя.\nOrder: ${order.id}\nUserID: ${order.userId}\nError: ${err.message}`,
             })
+          } else {
+            const { login, password } = createdUserResponse.data.user
+
+            if (!createdUserResponse.data.availableCourses) {
+              responses.push({
+                type: 'message',
+                chatId: user.id,
+                text: `Не удалось добавить курс пользователю.\nOrder: ${order.id}\nUserID: ${order.userId}`,
+              })
+            }
+
+            responses.push(ResponseService.genWelcomeToSchool(order.userId, login, password))
           }
-
-          const { login, password } = createdUserResponse.data.user
-
-          if (!createdUserResponse.data.availableCourses) {
-            responses.push({
-              type: 'message',
-              chatId: user.id,
-              text: `Не удалось добавить курс пользователю.\nOrder: ${order.id}\nUserID: ${order.userId}`,
-            })
-          }
-
-          responses.push(ResponseService.genWelcomeToSchool(order.userId, login, password))
         }
       } else {
         firstMessage = {

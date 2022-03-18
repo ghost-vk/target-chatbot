@@ -1,6 +1,6 @@
+const debug = require('debug')('boot:axios')
 const axios = require('axios')
 const config = require('./../config')
-const debug = require('debug')('boot:axios')
 
 const api = axios.create({
   withCredentials: true,
@@ -18,7 +18,6 @@ const login = async () => {
 
     return response.data
   } catch (e) {
-    debug('')
     throw e
   }
 }
@@ -28,6 +27,8 @@ api.interceptors.request.use(
     if (!config.getApiToken()) await login()
 
     axiosConfig.headers.Authorization = `Bearer ${config.getApiToken()}`
+
+    debug('Do request with Authorization Header. URL: %O', axiosConfig.url)
 
     return axiosConfig
   },
@@ -47,11 +48,7 @@ api.interceptors.response.use(
     ) {
       originalRequest._isRetry = true
       try {
-        const response = await axios.get(`${config.API_URL}/auth/refresh`, {
-          withCredentials: true,
-        })
-
-        config.setApiToken(response.data.accessToken)
+        await login()
 
         return api.request(originalRequest)
       } catch (e) {
